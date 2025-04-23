@@ -1,0 +1,115 @@
+import unittest
+
+from block_type import BlockType, block_to_block_type
+
+
+class TestBlockType(unittest.TestCase):
+    def test_paragraph(self):
+        block = "This is a simple paragraph with some text."
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+        
+        block = "This is a paragraph\nwith multiple lines\nof text."
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+        
+    def test_heading(self):
+        block = "# Heading 1"
+        self.assertEqual(block_to_block_type(block), BlockType.HEADING)
+        
+        block = "## Heading 2"
+        self.assertEqual(block_to_block_type(block), BlockType.HEADING)
+        
+        block = "###### Heading 6"
+        self.assertEqual(block_to_block_type(block), BlockType.HEADING)
+        
+        # Not a heading (no space after #)
+        block = "#NoSpace"
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+        
+        # Not a heading (too many #)
+        block = "####### Too many"
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+        
+    def test_code(self):
+        block = "```\ncode block\n```"
+        self.assertEqual(block_to_block_type(block), BlockType.CODE)
+        
+        block = "```python\ndef hello_world():\n    print('Hello, world!')\n```"
+        self.assertEqual(block_to_block_type(block), BlockType.CODE)
+        
+        # Not a code block (missing end backticks)
+        block = "```\ncode block"
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+        
+        # Not a code block (missing start backticks)
+        block = "code block\n```"
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+        
+    def test_quote(self):
+        block = "> This is a quote"
+        self.assertEqual(block_to_block_type(block), BlockType.QUOTE)
+        
+        block = "> This is a quote\n> with multiple lines"
+        self.assertEqual(block_to_block_type(block), BlockType.QUOTE)
+        
+        # Not a quote (missing > on second line)
+        block = "> This is a quote\nBut this line is not part of it"
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+        
+    def test_unordered_list(self):
+        block = "- Item 1"
+        self.assertEqual(block_to_block_type(block), BlockType.UNORDERED_LIST)
+        
+        block = "- Item 1\n- Item 2\n- Item 3"
+        self.assertEqual(block_to_block_type(block), BlockType.UNORDERED_LIST)
+        
+        # Not an unordered list (missing space after -)
+        block = "-Item 1\n-Item 2"
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+        
+        # Not an unordered list (inconsistent format)
+        block = "- Item 1\nNot a list item"
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+        
+    def test_ordered_list(self):
+        block = "1. Item 1"
+        self.assertEqual(block_to_block_type(block), BlockType.ORDERED_LIST)
+        
+        block = "1. Item 1\n2. Item 2\n3. Item 3"
+        self.assertEqual(block_to_block_type(block), BlockType.ORDERED_LIST)
+        
+        # Not an ordered list (incorrect numbering)
+        block = "1. Item 1\n3. Item 3"
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+        
+        # Not an ordered list (doesn't start with 1)
+        block = "2. Item 2\n3. Item 3"
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+        
+        # Not an ordered list (inconsistent format)
+        block = "1. Item 1\nNot a list item"
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+        
+    def test_mixed_content(self):
+        # Should detect as paragraph because it has mixed content
+        block = "- Item 1\n> Quote"
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+        
+        block = "1. Item 1\n- Item 2"
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+        
+    def test_edge_cases(self):
+        # Empty block should be a paragraph
+        block = ""
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+        
+        # Single character block
+        block = "a"
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+        
+        # Whitespace-only block
+        block = "   "
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+
+
+if __name__ == "__main__":
+    unittest.main()
