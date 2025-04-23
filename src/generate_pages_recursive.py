@@ -1,7 +1,7 @@
 import os
 from generate_page import generate_page
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath="/"):
     """
     Recursively crawl through the content directory and generate HTML pages
     for all markdown files, preserving directory structure.
@@ -10,6 +10,7 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
         dir_path_content: Path to the content directory
         template_path: Path to the HTML template file
         dest_dir_path: Path to the destination (public) directory
+        basepath: Base URL path for the site (default: "/")
     """
     print(f"Processing content directory: {dir_path_content}")
     
@@ -35,7 +36,7 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
                     # Generate the HTML file
                     dest_path = os.path.join(dest_blog_dir, "index.html")
                     print(f"Special case - Generating blog page: {index_path} -> {dest_path}")
-                    generate_page(index_path, template_path, dest_path)
+                    generate_page(index_path, template_path, dest_path, basepath)
     
     # Process each file and directory in the content directory
     for item in os.listdir(dir_path_content):
@@ -52,7 +53,7 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
             nested_dest_dir = os.path.join(dest_dir_path, relative_path)
             
             # Recursively process the subdirectory
-            generate_pages_recursive(source_path, template_path, nested_dest_dir)
+            generate_pages_recursive(source_path, template_path, nested_dest_dir, basepath)
         
         # If it's a markdown file
         elif item.endswith('.md'):
@@ -63,7 +64,7 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
                 # For index.md files, create index.html in the same directory
                 html_path = os.path.join(dest_dir_path, 'index.html')
                 print(f"Generating index: {source_path} -> {html_path}")
-                generate_page(source_path, template_path, html_path)
+                generate_page(source_path, template_path, html_path, basepath)
             else:
                 # For files like "contact.md" in the root directory
                 base_name = os.path.splitext(item)[0]
@@ -76,4 +77,4 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
                     
                     html_path = os.path.join(dest_subdir, 'index.html')
                     print(f"Generating page: {source_path} -> {html_path}")
-                    generate_page(source_path, template_path, html_path)
+                    generate_page(source_path, template_path, html_path, basepath)
