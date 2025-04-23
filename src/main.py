@@ -34,7 +34,7 @@ def main():
     basepath = sys.argv[1] if len(sys.argv) > 1 else "/static_site_generator/"
     
     # Step 1: Delete public directory if it exists
-    public_dir = "public"
+    public_dir = "docs"
     if os.path.exists(public_dir):
         print(f"Deleting directory: {public_dir}")
         shutil.rmtree(public_dir)
