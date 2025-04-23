@@ -1,4 +1,5 @@
 import os
+import sys
 import shutil
 from generate_pages_recursive import generate_pages_recursive
 
@@ -29,6 +30,9 @@ def copy_directory(source_dir, dest_dir):
             copy_directory(source_item, dest_item)
 
 def main():
+    # Get base path from command line argument, default to "/static_site_generator/"
+    basepath = sys.argv[1] if len(sys.argv) > 1 else "/static_site_generator/"
+    
     # Step 1: Delete public directory if it exists
     public_dir = "public"
     if os.path.exists(public_dir):
@@ -39,9 +43,9 @@ def main():
     print("Copying static files...")
     copy_directory("static", "public")
     
-    # Step 3: Generate all pages recursively
-    print("Generating pages...")
-    generate_pages_recursive("content", "template.html", "public")
+    # Step 3: Generate all pages recursively with configurable base path
+    print(f"Generating pages with base path: {basepath}")
+    generate_pages_recursive("content", "template.html", "public", basepath)
     
     print("Site generation complete!")
 
