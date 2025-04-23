@@ -33,19 +33,23 @@ def main():
     # Get base path from command line argument, default to "/static_site_generator/"
     basepath = sys.argv[1] if len(sys.argv) > 1 else "/static_site_generator/"
     
-    # Step 1: Delete public directory if it exists
-    public_dir = "docs"
-    if os.path.exists(public_dir):
-        print(f"Deleting directory: {public_dir}")
-        shutil.rmtree(public_dir)
+    # Step 1: Delete docs directory if it exists
+    docs_dir = "docs"
+    if os.path.exists(docs_dir):
+        print(f"Deleting directory: {docs_dir}")
+        shutil.rmtree(docs_dir)
     
-    # Step 2: Copy static files to public directory
+    # Step 2: Copy static files to docs directory
     print("Copying static files...")
-    copy_directory("static", "public")
+    copy_directory("static", "docs")
+    
+    # Add .nojekyll file to disable Jekyll processing
+    with open("docs/.nojekyll", "w") as f:
+        f.write("")
     
     # Step 3: Generate all pages recursively with configurable base path
     print(f"Generating pages with base path: {basepath}")
-    generate_pages_recursive("content", "template.html", "public", basepath)
+    generate_pages_recursive("content", "template.html", "docs", basepath)
     
     print("Site generation complete!")
 
